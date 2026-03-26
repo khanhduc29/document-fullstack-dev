@@ -7,6 +7,149 @@
 // ============================================================
 
 
+// ╔══════════════════════════════════════════════════════════════╗
+// ║              📖 LÝ THUYẾT EXPRESS.JS TỔNG QUAN              ║
+// ╚══════════════════════════════════════════════════════════════╝
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 1. EXPRESS.JS LÀ GÌ?                                        │
+// └─────────────────────────────────────────────────────────────┘
+// Express là web framework tối giản cho Node.js, dùng để xây dựng:
+// - RESTful APIs (JSON)
+// - Web applications (với template engine)
+// - Microservices
+//
+// Ví dụ đơn giản nhất:
+//   const express = require("express");
+//   const app = express();
+//   app.get("/", (req, res) => res.send("Hello World"));
+//   app.listen(3000);
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 2. MIDDLEWARE LÀ GÌ?                                        │
+// └─────────────────────────────────────────────────────────────┘
+// Middleware = hàm có quyền truy cập req, res, next
+// Chạy TUẦN TỰ theo thứ tự khai báo:
+//   Request → middleware1 → middleware2 → route handler → Response
+//
+// Cú pháp: function(req, res, next) { ...; next(); }
+// - next(): chuyển sang middleware tiếp theo
+// - Không gọi next() → request bị "treo"!
+//
+// Các loại:
+// 1. Application-level: app.use(fn)
+// 2. Router-level: router.use(fn)
+// 3. Built-in: express.json(), express.static()
+// 4. Error-handling: (err, req, res, next) → 4 params!
+// 5. Third-party: cors(), helmet(), morgan()
+//
+// Ví dụ:
+//   app.use((req, res, next) => {
+//     console.log(`${req.method} ${req.path}`);
+//     next();  // ← BẮT BUỘC!
+//   });
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 3. ROUTING                                                  │
+// └─────────────────────────────────────────────────────────────┘
+// RESTful API conventions:
+//   GET    /api/users      → Danh sách users
+//   GET    /api/users/:id  → 1 user theo id
+//   POST   /api/users      → Tạo user mới
+//   PUT    /api/users/:id  → Cập nhật toàn bộ
+//   PATCH  /api/users/:id  → Cập nhật 1 phần
+//   DELETE /api/users/:id  → Xóa user
+//
+// Route params: /users/:id → req.params.id
+// Query string: /users?page=2&limit=10 → req.query.page, req.query.limit
+// Body data: POST/PUT → req.body (cần express.json() middleware)
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 4. REQUEST & RESPONSE                                       │
+// └─────────────────────────────────────────────────────────────┘
+// Request (req):
+//   req.params   → { id: "123" }        (route params)
+//   req.query    → { page: "2" }        (query string)
+//   req.body     → { name: "Duc" }      (JSON body)
+//   req.headers  → { authorization: "Bearer xxx" }
+//   req.method   → "GET"
+//   req.cookies  → cookies (cần cookie-parser)
+//
+// Response (res):
+//   res.json(data)         → Trả JSON
+//   res.status(201).json() → Set status code
+//   res.send("text")       → Trả text/html
+//   res.redirect("/login") → Chuyển hướng
+//   res.sendFile(path)     → Gửi file
+//
+// HTTP Status Codes:
+//   200 OK → 201 Created → 204 No Content
+//   400 Bad Request → 401 Unauthorized → 403 Forbidden → 404 Not Found
+//   500 Internal Server Error
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 5. MVC PATTERN                                              │
+// └─────────────────────────────────────────────────────────────┘
+// Model:      Quản lý data & business logic (Mongoose Schema)
+// View:       JSON response (API) hoặc Template engine (Web)
+// Controller: Nhận req → gọi Model → trả res
+//
+// Cấu trúc thư mục:
+//   /controllers  → Xử lý logic (userController.js)
+//   /models       → Schema database (User.js)
+//   /routes       → Định nghĩa routes (userRoutes.js)
+//   /middleware    → Auth, validation, logging
+//   /services     → Business logic phức tạp
+//   /config       → Database, env config
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 6. ERROR HANDLING                                           │
+// └─────────────────────────────────────────────────────────────┘
+// Operational errors: lỗi dự đoán được (invalid input, not found)
+// Programming errors: bugs (null reference, type error)
+//
+// Pattern:
+//   1. Custom Error class: class AppError extends Error { statusCode, ... }
+//   2. Async wrapper: const asyncHandler = fn => (req,res,next) => fn(req,res,next).catch(next)
+//   3. Global error handler: app.use((err, req, res, next) => { ... })
+//   4. 404 handler: app.use("*", (req, res) => res.status(404).json(...))
+//
+// ⚠️ Error middleware PHẢI có 4 params và đặt SAU tất cả routes!
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 7. AUTHENTICATION (JWT)                                     │
+// └─────────────────────────────────────────────────────────────┘
+// JWT = JSON Web Token: header.payload.signature
+//
+// Flow:
+//   1. User đăng nhập → server tạo JWT → gửi về client
+//   2. Client gửi JWT trong header: Authorization: Bearer <token>
+//   3. Server verify token → cho phép/từ chối
+//
+//   const token = jwt.sign({ id: user._id }, SECRET, { expiresIn: "1h" });
+//   const decoded = jwt.verify(token, SECRET);
+//
+// Access Token: ngắn hạn (15m-1h) → dùng cho API calls
+// Refresh Token: dài hạn (7d-30d) → dùng để lấy access token mới
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 8. SECURITY CHECKLIST                                       │
+// └─────────────────────────────────────────────────────────────┘
+// ✅ helmet()       → Security HTTP headers
+// ✅ cors()         → Control cross-origin requests
+// ✅ rate-limit     → Chống brute force
+// ✅ bcrypt/argon2  → Hash passwords
+// ✅ sanitize input → Chống NoSQL injection & XSS
+// ✅ HTTPS          → Mã hóa truyền tải
+// ✅ env variables  → Không hardcode secrets
+// ✅ Validate input → Dùng Joi/Zod/express-validator
+
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║              🏋️ BÀI TẬP THỰC HÀNH BÊN DƯỚI                ║
+// ╚══════════════════════════════════════════════════════════════╝
+
+
 // ************************************************************
 // PHẦN 1: KHỞI TẠO SERVER CƠ BẢN
 // ************************************************************

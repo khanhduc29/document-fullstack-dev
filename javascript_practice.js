@@ -7,6 +7,288 @@
 // ============================================================
 
 
+// ╔══════════════════════════════════════════════════════════════╗
+// ║              📖 LÝ THUYẾT JAVASCRIPT TỔNG QUAN              ║
+// ╚══════════════════════════════════════════════════════════════╝
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 1. JAVASCRIPT LÀ GÌ?                                       │
+// └─────────────────────────────────────────────────────────────┘
+// JavaScript là ngôn ngữ lập trình thông dịch (interpreted), đơn luồng
+// (single-threaded), đa mô hình (multi-paradigm: OOP, functional, event-driven).
+//
+// Ví dụ đơn giản:
+//   console.log("Xin chào!");  // In ra console
+//   let x = 5 + 3;             // Tính toán: x = 8
+//   alert("Hello");            // Hiển thị hộp thoại (trình duyệt)
+
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 2. BIẾN (Variables)                                         │
+// └─────────────────────────────────────────────────────────────┘
+// var  → Phạm vi function, có hoisting, có thể khai báo lại → TRÁNH dùng
+// let  → Phạm vi block {}, hoisting nhưng TDZ, KHÔNG khai báo lại
+// const → Như let nhưng KHÔNG gán lại (binding bất biến, giá trị có thể thay đổi nếu là object)
+//
+// Ví dụ:
+//   var a = 1;    // function-scoped
+//   let b = 2;    // block-scoped
+//   const c = 3;  // block-scoped + không gán lại
+//
+//   const arr = [1, 2];
+//   arr.push(3);  // ✅ OK - thay đổi nội dung (mutate)
+//   // arr = [];   // ❌ Error - không gán lại binding
+//
+// Hoisting:
+//   console.log(x); // undefined (var được hoisted)
+//   var x = 5;
+//   console.log(y); // ❌ ReferenceError (let có TDZ - Temporal Dead Zone)
+//   let y = 10;
+
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 3. KIỂU DỮ LIỆU (Data Types)                              │
+// └─────────────────────────────────────────────────────────────┘
+// 7 kiểu nguyên thủy (Primitive) - bất biến, so sánh theo giá trị:
+//   string   → "hello", 'world', `template ${var}`
+//   number   → 42, 3.14, NaN, Infinity (không phân biệt int/float)
+//   boolean  → true, false
+//   null     → giá trị rỗng có chủ đích
+//   undefined → chưa gán giá trị
+//   symbol   → Symbol("id") - duy nhất, không lặp lại
+//   bigint   → 123n - số nguyên lớn
+//
+// Kiểu tham chiếu (Reference) - so sánh theo tham chiếu (địa chỉ bộ nhớ):
+//   object   → { key: "value" }
+//   array    → [1, 2, 3]  (thực chất là object)
+//   function → function() {}  (thực chất là object)
+//
+// Ví dụ so sánh:
+//   "abc" === "abc"  // true  (primitive → so sánh giá trị)
+//   [1,2] === [1,2]  // false (reference → khác địa chỉ bộ nhớ)
+//   const a = { x: 1 }; const b = a;
+//   a === b  // true (cùng reference)
+
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 4. ÉP KIỂU (Type Coercion)                                 │
+// └─────────────────────────────────────────────────────────────┘
+// JS tự động ép kiểu khi cần. Đây là nguồn gốc nhiều bug!
+//
+//   == (loose equality):  so sánh SAU KHI ép kiểu
+//   === (strict equality): so sánh KHÔNG ép kiểu (KHUYÊN DÙNG!)
+//
+// Ví dụ:
+//   "5" + 3    → "53"   (number → string, nối chuỗi)
+//   "5" - 3    → 2      (string → number, trừ)
+//   true + 1   → 2      (true → 1)
+//   false + 1  → 1      (false → 0)
+//   "" == false → true  (cả hai ép về 0)
+//   "" === false → false (khác kiểu)
+//   null == undefined → true  (đặc biệt!)
+//   null === undefined → false
+//
+// Falsy values (ép thành false): false, 0, -0, "", null, undefined, NaN
+// Truthy values: mọi thứ khác (kể cả "0", [], {})
+
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 5. HÀM (Functions)                                          │
+// └─────────────────────────────────────────────────────────────┘
+// 3 cách tạo hàm:
+//
+// a) Function Declaration (có hoisting):
+//   function cong(a, b) { return a + b; }
+//
+// b) Function Expression (không hoisting):
+//   const cong = function(a, b) { return a + b; };
+//
+// c) Arrow Function (không có this riêng, không hoisting):
+//   const cong = (a, b) => a + b;    // 1 dòng → tự return
+//   const cong = (a, b) => { return a + b; };  // Nhiều dòng → cần return
+//
+// Default Parameters:
+//   function greet(name = "World") { return `Hello ${name}`; }
+//   greet()       → "Hello World"
+//   greet("Duc")  → "Hello Duc"
+//
+// Rest Parameters:
+//   function sum(...numbers) { return numbers.reduce((a, b) => a + b, 0); }
+//   sum(1, 2, 3)  → 6
+
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 6. SCOPE & CLOSURE                                          │
+// └─────────────────────────────────────────────────────────────┘
+// Scope = phạm vi truy cập biến:
+//   - Global Scope: biến khai báo bên ngoài mọi function
+//   - Function Scope: biến var trong function
+//   - Block Scope: biến let/const trong {}
+//
+// Scope Chain: khi tìm biến, JS đi từ scope hiện tại → scope cha → ... → global
+//
+// Closure = hàm "nhớ" biến từ scope bên ngoài, ngay cả khi scope đó đã kết thúc.
+// Ví dụ:
+//   function taoBodem() {
+//     let count = 0;                    // Biến local
+//     return function() {
+//       count++;                        // Closure "nhớ" biến count
+//       return count;
+//     };
+//   }
+//   const dem = taoBodem();
+//   dem(); // 1
+//   dem(); // 2  ← count vẫn tồn tại nhờ closure!
+
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 7. THIS                                                     │
+// └─────────────────────────────────────────────────────────────┘
+// this phụ thuộc vào CÁCH GỌI hàm, không phải nơi khai báo:
+//
+//   1. Global:         this → window (browser) / global (Node)
+//   2. Method:         obj.method() → this = obj
+//   3. Arrow function: kế thừa this từ scope cha (lexical this)
+//   4. new:            this = object mới tạo
+//   5. call/apply/bind: this = argument đầu tiên
+//
+// Ví dụ:
+//   const obj = {
+//     name: "Duc",
+//     say() { console.log(this.name); },        // "Duc" (method)
+//     sayArrow: () => { console.log(this.name); } // undefined (arrow → global)
+//   };
+//   obj.say();      // "Duc"
+//   obj.sayArrow(); // undefined
+
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 8. ASYNCHRONOUS (Bất đồng bộ)                              │
+// └─────────────────────────────────────────────────────────────┘
+// JS là single-threaded → dùng Event Loop để xử lý bất đồng bộ
+//
+// Callback → Promise → async/await (tiến hóa)
+//
+// Event Loop: Call Stack → Microtask Queue (Promise) → Macrotask Queue (setTimeout)
+//
+// Promise:
+//   const p = new Promise((resolve, reject) => {
+//     // async operation
+//     resolve(data);   // thành công
+//     reject(error);   // thất bại
+//   });
+//   p.then(data => ...).catch(err => ...).finally(() => ...);
+//
+// async/await (syntactic sugar cho Promise):
+//   async function getData() {
+//     try {
+//       const res = await fetch(url);    // Đợi Promise resolve
+//       const data = await res.json();
+//       return data;
+//     } catch (err) {
+//       console.error(err);
+//     }
+//   }
+//
+// Ví dụ Event Loop:
+//   console.log("1");                              // 1 (Call Stack)
+//   setTimeout(() => console.log("2"), 0);         // 4 (Macrotask)
+//   Promise.resolve().then(() => console.log("3"));// 3 (Microtask)
+//   console.log("4");                              // 2 (Call Stack)
+//   // Kết quả: 1, 4, 3, 2
+
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 9. DESTRUCTURING & SPREAD/REST                              │
+// └─────────────────────────────────────────────────────────────┘
+// Destructuring = "phá" cấu trúc, rút trích giá trị ra biến:
+//
+//   // Array destructuring
+//   const [a, b, ...rest] = [1, 2, 3, 4, 5];
+//   // a = 1, b = 2, rest = [3, 4, 5]
+//
+//   // Object destructuring
+//   const { name, age, country = "VN" } = { name: "Duc", age: 25 };
+//   // name = "Duc", age = 25, country = "VN" (default)
+//
+//   // Đổi tên biến
+//   const { name: hoTen } = { name: "Duc" };  // hoTen = "Duc"
+//
+// Spread (...) = "trải" ra:
+//   const arr1 = [1, 2]; const arr2 = [...arr1, 3, 4]; // [1,2,3,4]
+//   const obj1 = { a: 1 }; const obj2 = { ...obj1, b: 2 }; // {a:1, b:2}
+//
+// Rest (...) = "gom" lại (trong function parameters hoặc destructuring):
+//   function sum(...nums) { }  // nums = mảng tất cả arguments
+
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 10. CLASS & OOP                                             │
+// └─────────────────────────────────────────────────────────────┘
+// Class = "bản thiết kế" tạo objects (syntactic sugar cho Prototype):
+//
+//   class Animal {
+//     #sound;  // Private field (ES2022)
+//     constructor(name, sound) {
+//       this.name = name;
+//       this.#sound = sound;
+//     }
+//     speak() { return `${this.name}: ${this.#sound}`; }
+//     static create(name) { return new Animal(name, "..."); }
+//   }
+//
+//   class Dog extends Animal {         // Kế thừa
+//     constructor(name) {
+//       super(name, "Gâu gâu");        // Gọi constructor cha
+//     }
+//     speak() { return super.speak() + "!!!"; }  // Override + gọi cha
+//   }
+//
+//   const rex = new Dog("Rex");
+//   rex.speak();  // "Rex: Gâu gâu!!!"
+
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 11. ARRAY METHODS QUAN TRỌNG                               │
+// └─────────────────────────────────────────────────────────────┘
+// Không mutate (trả về mảng/giá trị mới):
+//   map(fn)       → biến đổi mỗi phần tử       [1,2,3].map(x => x*2) → [2,4,6]
+//   filter(fn)    → lọc theo điều kiện          [1,2,3].filter(x => x>1) → [2,3]
+//   reduce(fn, init) → gộp thành 1 giá trị     [1,2,3].reduce((a,b) => a+b, 0) → 6
+//   find(fn)      → tìm phần tử đầu tiên       [1,2,3].find(x => x>1) → 2
+//   some(fn)      → CÓ ít nhất 1 thỏa?         [1,2,3].some(x => x>2) → true
+//   every(fn)     → TẤT CẢ thỏa?               [1,2,3].every(x => x>0) → true
+//   slice(start, end) → cắt mảng               [1,2,3,4].slice(1,3) → [2,3]
+//   flat(depth)   → làm phẳng                   [[1,[2]],3].flat(Infinity) → [1,2,3]
+//
+// Mutate (thay đổi mảng gốc):
+//   push/pop      → thêm/xóa cuối
+//   shift/unshift → xóa/thêm đầu
+//   splice(i,n,items) → xóa n phần tử từ i, thêm items
+//   sort(fn)      → sắp xếp tại chỗ
+//   reverse()     → đảo ngược
+
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 12. ES6+ FEATURES TÓM TẮT                                  │
+// └─────────────────────────────────────────────────────────────┘
+// ES6 (2015):  let/const, arrow function, template literals, destructuring,
+//              spread/rest, class, Promise, Map/Set, Symbol, Modules, for...of
+// ES7 (2016):  includes(), ** (exponent)
+// ES8 (2017):  async/await, Object.entries/values, padStart/padEnd
+// ES9 (2018):  rest/spread objects, Promise.finally, for-await-of
+// ES10 (2019): flat/flatMap, Object.fromEntries, optional catch
+// ES11 (2020): ?. (optional chaining), ?? (nullish coalescing), BigInt, Promise.allSettled
+// ES12 (2021): ||= &&= ??= (logical assignment), replaceAll, Promise.any
+// ES13 (2022): Top-level await, #private fields, at()
+// ES14 (2023): findLast, toSorted, toReversed, toSpliced (immutable array methods)
+
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║              🏋️ BÀI TẬP THỰC HÀNH BÊN DƯỚI                ║
+// ╚══════════════════════════════════════════════════════════════╝
+
+
 // ************************************************************
 // PHẦN 1: BIẾN & KIỂU DỮ LIỆU (Variables & Data Types)
 // ************************************************************

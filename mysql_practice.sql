@@ -8,6 +8,146 @@
 -- ============================================================
 
 
+-- ╔══════════════════════════════════════════════════════════════╗
+-- ║              📖 LÝ THUYẾT MYSQL TỔNG QUAN                   ║
+-- ╚══════════════════════════════════════════════════════════════╝
+
+-- ┌─────────────────────────────────────────────────────────────┐
+-- │ 1. MYSQL & SQL LÀ GÌ?                                      │
+-- └─────────────────────────────────────────────────────────────┘
+-- SQL (Structured Query Language) = ngôn ngữ truy vấn CSDL quan hệ.
+-- MySQL = hệ quản trị CSDL quan hệ (RDBMS) mã nguồn mở, thuộc Oracle.
+-- Lưu dữ liệu dạng bảng (table) có hàng (row) và cột (column).
+-- Quan hệ giữa các bảng qua khóa chính (PK) và khóa ngoại (FK).
+--
+-- Ví dụ:
+--   SELECT name, email FROM users WHERE age > 18 ORDER BY name;
+
+-- ┌─────────────────────────────────────────────────────────────┐
+-- │ 2. KIỂU DỮ LIỆU                                            │
+-- └─────────────────────────────────────────────────────────────┘
+-- SỐ:    INT, BIGINT, DECIMAL(p,s), FLOAT, DOUBLE, TINYINT(1)
+-- CHUỖI: VARCHAR(n), CHAR(n), TEXT, LONGTEXT, ENUM('a','b')
+-- NGÀY:  DATE, DATETIME, TIMESTAMP, TIME, YEAR
+-- KHÁC:  BLOB (binary), JSON, BOOLEAN
+--
+-- VARCHAR vs CHAR:
+--   VARCHAR(100) → "Duc" lưu 3 bytes + 1 (độ dài thay đổi)
+--   CHAR(100)    → "Duc" lưu 100 bytes (độ dài cố định)
+-- DECIMAL vs FLOAT:
+--   DECIMAL(10,2) → chính xác (tiền tệ) → 12345678.99
+--   FLOAT         → xấp xỉ (tính toán khoa học)
+
+-- ┌─────────────────────────────────────────────────────────────┐
+-- │ 3. CÚ PHÁP SQL CƠ BẢN                                      │
+-- └─────────────────────────────────────────────────────────────┘
+-- DDL (Data Definition): CREATE, ALTER, DROP, TRUNCATE
+-- DML (Data Manipulation): SELECT, INSERT, UPDATE, DELETE
+-- DCL (Data Control): GRANT, REVOKE
+-- TCL (Transaction Control): COMMIT, ROLLBACK, SAVEPOINT
+--
+-- Thứ tự thực thi SELECT:
+--   FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT
+--   (Viết: SELECT ... FROM ... WHERE ... GROUP BY ... HAVING ... ORDER BY ... LIMIT)
+
+-- ┌─────────────────────────────────────────────────────────────┐
+-- │ 4. CONSTRAINTS (Ràng buộc)                                  │
+-- └─────────────────────────────────────────────────────────────┘
+-- PRIMARY KEY  → Định danh duy nhất, NOT NULL + UNIQUE
+-- FOREIGN KEY  → Liên kết bảng, đảm bảo tham chiếu hợp lệ
+-- UNIQUE       → Giá trị không trùng (cho phép NULL)
+-- NOT NULL     → Bắt buộc có giá trị
+-- DEFAULT      → Giá trị mặc định
+-- CHECK        → Điều kiện (MySQL 8.0+)
+-- AUTO_INCREMENT → Tự tăng (thường dùng cho PK)
+--
+-- ON DELETE CASCADE  → Xóa cha → tự xóa con
+-- ON DELETE SET NULL → Xóa cha → FK con = NULL
+-- ON UPDATE CASCADE  → Cập nhật PK cha → tự cập nhật FK con
+
+-- ┌─────────────────────────────────────────────────────────────┐
+-- │ 5. JOIN (Kết bảng)                                          │
+-- └─────────────────────────────────────────────────────────────┘
+-- INNER JOIN  → Chỉ rows khớp CẢ HAI bảng
+-- LEFT JOIN   → TẤT CẢ rows bảng trái + khớp bảng phải
+-- RIGHT JOIN  → TẤT CẢ rows bảng phải + khớp bảng trái
+-- CROSS JOIN  → Tích Descartes (mọi tổ hợp)
+-- SELF JOIN   → Bảng join với chính nó
+--
+-- Ví dụ:
+--   SELECT e.name, d.name AS dept
+--   FROM employees e
+--   INNER JOIN departments d ON e.dept_id = d.id;
+
+-- ┌─────────────────────────────────────────────────────────────┐
+-- │ 6. AGGREGATE & GROUP BY                                     │
+-- └─────────────────────────────────────────────────────────────┘
+-- COUNT(*) → Đếm | SUM() → Tổng | AVG() → Trung bình
+-- MIN() → Nhỏ nhất | MAX() → Lớn nhất
+-- GROUP_CONCAT() → Nối chuỗi trong nhóm
+--
+-- GROUP BY: nhóm rows theo giá trị → tính aggregate
+-- HAVING: lọc SAU khi GROUP BY (WHERE lọc TRƯỚC)
+--
+-- Ví dụ:
+--   SELECT dept_id, COUNT(*) AS total, AVG(salary) AS avg_sal
+--   FROM employees
+--   GROUP BY dept_id
+--   HAVING total > 5;
+
+-- ┌─────────────────────────────────────────────────────────────┐
+-- │ 7. WINDOW FUNCTIONS                                         │
+-- └─────────────────────────────────────────────────────────────┘
+-- Tính toán trên "cửa sổ" rows KHÔNG gộp lại (khác GROUP BY)
+--   function() OVER (PARTITION BY ... ORDER BY ...)
+--
+-- ROW_NUMBER() → Số thứ tự (không trùng)
+-- RANK()       → Xếp hạng (trùng → bỏ thứ hạng)
+-- DENSE_RANK() → Xếp hạng (trùng → KHÔNG bỏ)
+-- LAG(col, n)  → Giá trị n row trước
+-- LEAD(col, n) → Giá trị n row sau
+-- SUM() OVER() → Tổng tích lũy
+--
+-- Ví dụ Top N per group:
+--   SELECT * FROM (
+--     SELECT *, DENSE_RANK() OVER (PARTITION BY dept ORDER BY salary DESC) AS rnk
+--     FROM employees
+--   ) ranked WHERE rnk <= 3;
+
+-- ┌─────────────────────────────────────────────────────────────┐
+-- │ 8. CTE, SUBQUERY, TRANSACTION                               │
+-- └─────────────────────────────────────────────────────────────┘
+-- CTE (WITH): bảng tạm đặt tên, dễ đọc hơn subquery
+--   WITH stats AS (SELECT ...) SELECT * FROM stats;
+-- Recursive CTE: cho cây phân cấp (quản lý, menu)
+--
+-- Transaction (ACID):
+--   START TRANSACTION;
+--     UPDATE ... ;
+--     UPDATE ... ;
+--   COMMIT;  -- hoặc ROLLBACK;
+--
+-- ACID: Atomicity (tất cả hoặc không), Consistency, Isolation, Durability
+
+-- ┌─────────────────────────────────────────────────────────────┐
+-- │ 9. INDEX & PERFORMANCE                                      │
+-- └─────────────────────────────────────────────────────────────┘
+-- Index giúp query nhanh hơn (trade-off: chậm write + tốn RAM)
+-- B-Tree (mặc định), Full-Text, Composite, Covering
+--
+-- EXPLAIN SELECT ... → xem query plan:
+--   type: ALL (full scan - TỆ) → ref/range (index) → const (PK - TỐT)
+--   key: index nào được dùng
+--
+-- Tips: Index cho WHERE, JOIN, ORDER BY columns
+--       Tránh SELECT *, functions trên indexed column
+
+
+-- ╔══════════════════════════════════════════════════════════════╗
+-- ║              🏋️ BÀI TẬP THỰC HÀNH BÊN DƯỚI                ║
+-- ╚══════════════════════════════════════════════════════════════╝
+
+
 -- ************************************************************
 -- PHẦN 1: QUẢN LÝ DATABASE & TABLE
 -- ************************************************************

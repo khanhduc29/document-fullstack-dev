@@ -8,6 +8,123 @@
 -- ============================================================
 
 
+-- ╔══════════════════════════════════════════════════════════════╗
+-- ║              📖 LÝ THUYẾT POSTGRESQL TỔNG QUAN              ║
+-- ╚══════════════════════════════════════════════════════════════╝
+
+-- ┌─────────────────────────────────────────────────────────────┐
+-- │ 1. POSTGRESQL LÀ GÌ?                                       │
+-- └─────────────────────────────────────────────────────────────┘
+-- PostgreSQL (Postgres) là RDBMS mã nguồn mở, tuân thủ SQL chuẩn nhất.
+-- Nổi bật: extensible, hỗ trợ JSON, arrays, full-text search, GIS.
+-- Dùng khi cần: data integrity, tính năng nâng cao, hybrid SQL + NoSQL.
+
+-- ┌─────────────────────────────────────────────────────────────┐
+-- │ 2. POSTGRESQL vs MYSQL                                      │
+-- └─────────────────────────────────────────────────────────────┘
+-- PostgreSQL có mà MySQL không/yếu:
+-- ✅ JSONB (JSON nhị phân, query nhanh → thay thế NoSQL trong nhiều case)
+-- ✅ ARRAY native (lưu mảng không cần bảng phụ)
+-- ✅ RETURNING clause (trả data sau INSERT/UPDATE/DELETE)
+-- ✅ UPSERT (ON CONFLICT DO UPDATE/NOTHING)
+-- ✅ Materialized Views (view lưu kết quả vật lý)
+-- ✅ LATERAL JOIN (subquery tham chiếu bảng trái)
+-- ✅ FILTER clause cho aggregate
+-- ✅ Full-Text Search built-in mạnh mẽ
+-- ✅ Range types (daterange, numrange)
+-- ✅ Custom Types, Domains
+-- ✅ Table Partitioning mạnh
+-- ✅ Row-Level Security (RLS)
+-- ✅ Generate Series (tạo dãy số/ngày)
+
+-- ┌─────────────────────────────────────────────────────────────┐
+-- │ 3. KIỂU DỮ LIỆU ĐẶC BIỆT                                  │
+-- └─────────────────────────────────────────────────────────────┘
+-- SERIAL / BIGSERIAL  → Auto-increment
+-- UUID                → Unique ID toàn cầu (uuid_generate_v4())
+-- JSONB               → JSON nhị phân (nhanh, có index GIN)
+-- TEXT[]               → Array native
+-- INET / CIDR         → Địa chỉ IP
+-- DATERANGE           → Khoảng ngày
+-- TIMESTAMPTZ         → Timestamp CÓ timezone (khuyên dùng)
+-- NUMERIC(p,s)        → Số chính xác (thay DECIMAL)
+-- BOOLEAN             → true/false thật (không phải TINYINT)
+--
+-- Ví dụ:
+--   skills TEXT[] DEFAULT '{}'           -- Array
+--   profile JSONB DEFAULT '{}'           -- JSON linh hoạt
+--   date_range DATERANGE                 -- Khoảng ngày
+
+-- ┌─────────────────────────────────────────────────────────────┐
+-- │ 4. JSONB OPERATIONS                                         │
+-- └─────────────────────────────────────────────────────────────┘
+-- Operators:
+--   ->   lấy value (JSON)    |   ->>  lấy value (text)
+--   @>   chứa                |   ?    có key
+--   ||   merge               |   -    xóa key
+--
+-- Ví dụ:
+--   SELECT profile->>'level' FROM employees;          -- text
+--   SELECT * FROM employees WHERE profile @> '{"level":"senior"}';
+--   UPDATE employees SET profile = profile || '{"cert":"AWS"}';
+
+-- ┌─────────────────────────────────────────────────────────────┐
+-- │ 5. ARRAY OPERATIONS                                         │
+-- └─────────────────────────────────────────────────────────────┘
+-- Operators:
+--   @>   chứa       |   &&   overlap   |   ||   nối
+--   ANY()  khớp 1   |   ALL()  khớp tất cả
+--
+-- Ví dụ:
+--   SELECT * FROM emp WHERE 'JavaScript' = ANY(skills);
+--   SELECT * FROM emp WHERE skills @> ARRAY['JS','React']; -- Biết CẢ hai
+--   UPDATE emp SET skills = array_append(skills, 'Docker');
+--   SELECT skill, COUNT(*) FROM emp, unnest(skills) AS skill GROUP BY skill;
+
+-- ┌─────────────────────────────────────────────────────────────┐
+-- │ 6. RETURNING & UPSERT                                       │
+-- └─────────────────────────────────────────────────────────────┘
+-- RETURNING: trả data sau INSERT/UPDATE/DELETE (MySQL không có!)
+--   INSERT INTO users (name) VALUES ('An') RETURNING id, name;
+--   DELETE FROM users WHERE id = 1 RETURNING *;
+--
+-- UPSERT (ON CONFLICT):
+--   INSERT INTO users (email, name) VALUES ('a@b.com', 'An')
+--   ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name;
+--   ON CONFLICT (email) DO NOTHING;
+
+-- ┌─────────────────────────────────────────────────────────────┐
+-- │ 7. MATERIALIZED VIEWS & LATERAL JOIN                        │
+-- └─────────────────────────────────────────────────────────────┘
+-- Materialized View: view lưu kết quả vật lý → query nhanh
+--   CREATE MATERIALIZED VIEW mv_stats AS SELECT ... WITH DATA;
+--   REFRESH MATERIALIZED VIEW CONCURRENTLY mv_stats;
+--
+-- LATERAL JOIN: subquery tham chiếu bảng bên trái (Top N per group)
+--   SELECT d.name, top.* FROM departments d
+--   CROSS JOIN LATERAL (
+--     SELECT * FROM employees e WHERE e.dept_id = d.id
+--     ORDER BY salary DESC LIMIT 3
+--   ) AS top;
+
+-- ┌─────────────────────────────────────────────────────────────┐
+-- │ 8. INDEX TYPES                                              │
+-- └─────────────────────────────────────────────────────────────┘
+-- B-tree  → Mặc định (<, >, =, BETWEEN)
+-- GIN     → Inverted index (array, jsonb, full-text) → KHUYÊN DÙNG
+-- GiST    → Range, geometry, full-text
+-- BRIN    → Bảng rất lớn, data tự nhiên sắp xếp
+-- Partial Index: chỉ index rows thỏa điều kiện
+-- Expression Index: index biểu thức (LOWER(email))
+--
+-- EXPLAIN ANALYZE SELECT ... → xem query plan + thời gian thực tế
+
+
+-- ╔══════════════════════════════════════════════════════════════╗
+-- ║              🏋️ BÀI TẬP THỰC HÀNH BÊN DƯỚI                ║
+-- ╚══════════════════════════════════════════════════════════════╝
+
+
 -- ************************************************************
 -- PHẦN 1: SO SÁNH POSTGRESQL vs MYSQL
 -- ************************************************************

@@ -8,6 +8,207 @@
 // ============================================================
 
 
+// ╔══════════════════════════════════════════════════════════════╗
+// ║              📖 LÝ THUYẾT REACTJS TỔNG QUAN                 ║
+// ╚══════════════════════════════════════════════════════════════╝
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 1. REACT LÀ GÌ?                                             │
+// └─────────────────────────────────────────────────────────────┘
+// React là thư viện JavaScript để xây dựng giao diện người dùng (UI),
+// phát triển bởi Facebook (Meta). React dùng component-based architecture
+// và Virtual DOM để render hiệu quả.
+//
+// Đặc điểm chính:
+// - Declarative: mô tả UI muốn hiển thị, React lo phần render
+// - Component-Based: chia UI thành các khối nhỏ tái sử dụng
+// - Virtual DOM: so sánh DOM ảo với DOM thật → chỉ update phần thay đổi
+// - One-way Data Flow: dữ liệu chảy từ cha → con (props)
+//
+// Ví dụ:
+//   function App() {
+//     return <h1>Xin chào React!</h1>;  // JSX → React.createElement()
+//   }
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 2. JSX (JavaScript XML)                                     │
+// └─────────────────────────────────────────────────────────────┘
+// JSX = cú pháp giống HTML viết trong JavaScript. Babel biên dịch JSX → JS.
+//
+// Quy tắc:
+// - Phải có 1 root element (dùng <div> hoặc <> fragment)
+// - className thay vì class
+// - htmlFor thay vì for
+// - camelCase cho attributes (onClick, onChange, tabIndex)
+// - {} để nhúng biểu thức JavaScript
+// - Self-closing tags: <img />, <input />, <br />
+//
+// Ví dụ:
+//   const name = "Duc";
+//   const element = (
+//     <div className="card">
+//       <h1>Hello, {name}!</h1>          {/* Nhúng biến */}
+//       <p>{2 + 3}</p>                    {/* Nhúng biểu thức */}
+//       <p>{name.toUpperCase()}</p>       {/* Nhúng method */}
+//       {isLoggedIn && <span>Welcome</span>}  {/* Conditional */}
+//     </div>
+//   );
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 3. COMPONENT & PROPS                                        │
+// └─────────────────────────────────────────────────────────────┘
+// Component = hàm nhận props → trả về JSX (UI)
+// Props = dữ liệu truyền từ component cha → con (read-only!)
+//
+// Ví dụ:
+//   // Khai báo component
+//   function Greeting({ name, age = 18 }) {   // Destructuring props + default
+//     return <p>Tôi là {name}, {age} tuổi</p>;
+//   }
+//
+//   // Sử dụng
+//   <Greeting name="Duc" age={25} />
+//   <Greeting name="An" />  {/* age = 18 (default) */}
+//
+// Children prop:
+//   function Card({ children, title }) {
+//     return <div><h2>{title}</h2>{children}</div>;
+//   }
+//   <Card title="Hello"><p>Nội dung bên trong</p></Card>
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 4. STATE & useState                                         │
+// └─────────────────────────────────────────────────────────────┘
+// State = dữ liệu NỘI BỘ của component. Khi state thay đổi → RE-RENDER.
+//
+//   const [count, setCount] = useState(0);  // [giá trị, hàm cập nhật]
+//
+// Quy tắc quan trọng:
+// 1. setState là ASYNCHRONOUS (không cập nhật ngay)
+// 2. Khi update dựa trên state cũ → dùng callback:
+//    setCount(prev => prev + 1);  ✅
+//    setCount(count + 1);          ❌ (có thể sai nếu nhiều update liên tiếp)
+// 3. State là IMMUTABLE → tạo bản sao mới, KHÔNG mutate:
+//    setItems([...items, newItem]);           ✅ Array
+//    setUser({ ...user, name: "New" });       ✅ Object
+//    items.push(newItem); setItems(items);    ❌ Mutate gốc
+//
+// Ví dụ:
+//   function Counter() {
+//     const [count, setCount] = useState(0);
+//     return <button onClick={() => setCount(prev => prev + 1)}>{count}</button>;
+//   }
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 5. useEffect & LIFECYCLE                                    │
+// └─────────────────────────────────────────────────────────────┘
+// useEffect xử lý side effects: API calls, DOM manipulation, timers, subscriptions
+//
+//   useEffect(() => {
+//     // Side effect code
+//     return () => { /* Cleanup (unmount hoặc trước re-run) */ };
+//   }, [dependencies]);
+//
+// Dependency array:
+//   useEffect(() => {}, []);      // Chạy 1 lần (mount)
+//   useEffect(() => {}, [a, b]);  // Chạy khi a hoặc b thay đổi
+//   useEffect(() => {});          // Chạy sau MỌI render (hiếm dùng)
+//
+// Ví dụ fetch API:
+//   useEffect(() => {
+//     fetch("/api/users")
+//       .then(res => res.json())
+//       .then(data => setUsers(data));
+//   }, []);  // [] = chỉ fetch 1 lần
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 6. HOOKS QUAN TRỌNG                                         │
+// └─────────────────────────────────────────────────────────────┘
+// useState(init)        → Quản lý state đơn giản
+// useEffect(fn, deps)   → Side effects (fetch, timer, DOM)
+// useRef(init)           → Tham chiếu DOM / giá trị persist (không re-render)
+// useMemo(fn, deps)     → Cache GIÁ TRỊ tính toán nặng
+// useCallback(fn, deps) → Cache HÀM (tránh tạo mới mỗi render)
+// useContext(Context)    → Đọc giá trị từ Context (global state)
+// useReducer(reducer, init) → State phức tạp (giống Redux)
+//
+// Quy tắc Hooks:
+// 1. Chỉ gọi ở TOP LEVEL (không trong if, for, nested function)
+// 2. Chỉ gọi trong React Function Component hoặc Custom Hook
+//
+// useRef vs useState:
+//   useRef   → thay đổi KHÔNG gây re-render (dùng cho DOM ref, timer ID)
+//   useState → thay đổi GÂY re-render (dùng cho UI data)
+//
+// useMemo vs useCallback:
+//   useMemo(() => value, [deps])     → cache KẾT QUẢ
+//   useCallback(() => fn, [deps])    → cache HÀM
+//   // useCallback(fn, deps) === useMemo(() => fn, deps)
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 7. CONTEXT API                                              │
+// └─────────────────────────────────────────────────────────────┘
+// Context = chia sẻ data "toàn cục" mà không cần truyền props qua nhiều tầng
+// (giải quyết "prop drilling")
+//
+//   const ThemeContext = createContext("light");   // 1. Tạo context
+//
+//   <ThemeContext.Provider value="dark">           // 2. Cung cấp value
+//     <App />
+//   </ThemeContext.Provider>
+//
+//   const theme = useContext(ThemeContext);         // 3. Sử dụng value
+//
+// ⚠️ Khi Provider value thay đổi → TẤT CẢ consumer re-render
+// → Giải pháp: tách context, useMemo cho value, hoặc dùng state management
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 8. RENDERING & PERFORMANCE                                  │
+// └─────────────────────────────────────────────────────────────┘
+// React re-render khi: state thay đổi, props thay đổi, parent re-render
+//
+// Tối ưu:
+// - React.memo(Component): chỉ re-render khi props thay đổi (shallow compare)
+// - useMemo: cache tính toán nặng
+// - useCallback: cache function truyền qua props
+// - Key trong list: giúp React identify phần tử → diff hiệu quả
+// - Code splitting: React.lazy() + Suspense → tải component khi cần
+//
+// ❌ Lỗi thường gặp:
+//   <ul>{items.map(item => <li>{item}</li>)}</ul>  // Thiếu key!
+//   <ul>{items.map(item => <li key={item.id}>{item.name}</li>)}</ul>  // ✅
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 9. REACT PATTERNS                                           │
+// └─────────────────────────────────────────────────────────────┘
+// Custom Hook: tách logic tái sử dụng (useLocalStorage, useFetch, useDebounce)
+// HOC (Higher-Order Component): hàm nhận Component → trả về Component mới
+// Render Props: chia sẻ logic qua prop là function
+// Compound Components: nhóm component chia sẻ state ngầm (Tabs, Accordion)
+// Controlled vs Uncontrolled:
+//   Controlled: React quản lý value (value + onChange)
+//   Uncontrolled: DOM tự quản lý (ref + defaultValue)
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 10. VIRTUAL DOM & RECONCILIATION                            │
+// └─────────────────────────────────────────────────────────────┘
+// Khi state/props thay đổi:
+// 1. React tạo Virtual DOM mới (cây React Elements)
+// 2. So sánh (diff) Virtual DOM cũ vs mới
+// 3. Tính toán changes tối thiểu (Reconciliation)
+// 4. Cập nhật Real DOM chỉ phần thay đổi (Commit)
+//
+// Quy tắc diff:
+// - Khác type → unmount cũ, mount mới (div → span)
+// - Cùng type → update attributes/props
+// - List: dùng key để match phần tử → tránh re-mount không cần thiết
+
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║              🏋️ BÀI TẬP THỰC HÀNH BÊN DƯỚI                ║
+// ╚══════════════════════════════════════════════════════════════╝
+
+
 // ************************************************************
 // PHẦN 1: JSX & COMPONENT CƠ BẢN
 // ************************************************************

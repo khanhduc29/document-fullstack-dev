@@ -11,6 +11,158 @@
 // ============================================================
 
 
+// ╔══════════════════════════════════════════════════════════════╗
+// ║              📖 LÝ THUYẾT MONGODB TỔNG QUAN                 ║
+// ╚══════════════════════════════════════════════════════════════╝
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 1. MONGODB LÀ GÌ?                                          │
+// └─────────────────────────────────────────────────────────────┘
+// MongoDB là NoSQL database, lưu dữ liệu dạng document (BSON - Binary JSON).
+// Khác SQL: không dùng bảng/hàng/cột mà dùng Collection/Document/Field.
+// Schema linh hoạt: mỗi document trong cùng collection có thể khác cấu trúc.
+//
+// Ví dụ document:
+//   {
+//     _id: ObjectId("..."),
+//     name: "Nguyen Van An",
+//     age: 25,
+//     skills: ["JavaScript", "React"],     // Array
+//     address: { city: "HCM", q: "Q1" }   // Nested object
+//   }
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 2. CẤU TRÚC DỮ LIỆU                                       │
+// └─────────────────────────────────────────────────────────────┘
+// Database    → Chứa nhiều Collections (tương đương database SQL)
+// Collection  → Chứa nhiều Documents (tương đương table)
+// Document    → 1 bản ghi JSON-like (tương đương row)
+// Field       → 1 trường dữ liệu (tương đương column)
+// _id         → Primary key tự động (ObjectId 12 bytes)
+//
+// So sánh SQL vs MongoDB:
+//   SQL Table    → MongoDB Collection
+//   SQL Row      → MongoDB Document
+//   SQL Column   → MongoDB Field
+//   SQL JOIN     → $lookup (aggregation) hoặc populate (Mongoose)
+//   SQL GROUP BY → $group (aggregation)
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 3. CRUD OPERATIONS                                          │
+// └─────────────────────────────────────────────────────────────┘
+// CREATE:
+//   db.users.insertOne({ name: "An", age: 25 })
+//   db.users.insertMany([{ name: "An" }, { name: "Binh" }])
+//
+// READ:
+//   db.users.find()                    // Tất cả
+//   db.users.find({ age: { $gt: 20 }})// Lọc: age > 20
+//   db.users.findOne({ name: "An" })  // Tìm 1
+//   db.users.find().sort({ age: -1 }).limit(5).skip(10) // Sắp xếp + phân trang
+//
+// UPDATE:
+//   db.users.updateOne({ name: "An" }, { $set: { age: 26 } })
+//   db.users.updateMany({}, { $inc: { age: 1 } })  // Tăng tuổi tất cả
+//
+// DELETE:
+//   db.users.deleteOne({ name: "An" })
+//   db.users.deleteMany({ isActive: false })
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 4. QUERY OPERATORS                                          │
+// └─────────────────────────────────────────────────────────────┘
+// So sánh: $eq, $ne, $gt, $gte, $lt, $lte, $in, $nin
+// Logic:   $and, $or, $not, $nor
+// Array:   $all (chứa tất cả), $elemMatch, $size
+// Element: $exists (có field?), $type (kiểu dữ liệu?)
+//
+// Ví dụ:
+//   { age: { $gte: 18, $lte: 30 } }        // 18 <= age <= 30
+//   { $or: [{ city: "HCM" }, { city: "HN" }] }
+//   { skills: { $all: ["JS", "React"] } }   // Biết CẢ JS và React
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 5. UPDATE OPERATORS                                         │
+// └─────────────────────────────────────────────────────────────┘
+// $set      → Gán giá trị:    { $set: { age: 26 } }
+// $unset    → Xóa field:      { $unset: { phone: "" } }
+// $inc      → Tăng/giảm:      { $inc: { age: 1 } }
+// $push     → Thêm vào array: { $push: { skills: "Docker" } }
+// $pull     → Xóa khỏi array: { $pull: { skills: "PHP" } }
+// $addToSet → Thêm unique:    { $addToSet: { skills: "AWS" } }
+// $rename   → Đổi tên field:  { $rename: { name: "fullName" } }
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 6. AGGREGATION PIPELINE                                     │
+// └─────────────────────────────────────────────────────────────┘
+// Aggregation = "đường ống" xử lý data qua nhiều stages:
+//   db.collection.aggregate([ stage1, stage2, ... ])
+//
+// Các stages quan trọng:
+//   $match   → Lọc (giống WHERE)
+//   $group   → Nhóm + tính toán (giống GROUP BY)
+//   $sort    → Sắp xếp
+//   $project → Chọn/biến đổi fields
+//   $lookup  → JOIN với collection khác
+//   $unwind  → Tách array thành nhiều documents
+//   $limit   → Giới hạn
+//   $skip    → Bỏ qua
+//
+// Ví dụ:
+//   db.students.aggregate([
+//     { $match: { isActive: true } },
+//     { $group: { _id: "$city", total: { $sum: 1 }, avgGPA: { $avg: "$gpa" } } },
+//     { $sort: { avgGPA: -1 } }
+//   ])
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 7. INDEXING                                                 │
+// └─────────────────────────────────────────────────────────────┘
+// Index giúp tìm kiếm nhanh (giống mục lục sách):
+//   Không index → COLLSCAN (quét toàn bộ) → CHẬM
+//   Có index    → IXSCAN (dùng index)     → NHANH
+//
+// Loại: Single Field, Compound, Text, TTL, Unique, Partial
+//
+//   db.users.createIndex({ email: 1 }, { unique: true })
+//   db.users.createIndex({ name: "text" })  // Full-text search
+//   db.users.find({ email: "a@b.com" }).explain("executionStats") // Kiểm tra
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 8. MONGOOSE (Node.js ODM)                                   │
+// └─────────────────────────────────────────────────────────────┘
+// Mongoose = Object Data Modeling cho MongoDB + Node.js
+//
+// Schema → Model → CRUD:
+//   const schema = new mongoose.Schema({
+//     name: { type: String, required: true },
+//     email: { type: String, unique: true },
+//     age: { type: Number, min: 0 }
+//   }, { timestamps: true });
+//
+//   const User = mongoose.model("User", schema);
+//   await User.create({ name: "An" });
+//   await User.find({ age: { $gt: 18 } });
+//   await User.findByIdAndUpdate(id, data, { new: true });
+//   await User.findByIdAndDelete(id);
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 9. DATA MODELING                                            │
+// └─────────────────────────────────────────────────────────────┘
+// Embedding (nhúng): lưu data con bên trong document cha
+//   → Đọc nhanh, phù hợp quan hệ 1:few (user có addresses)
+// Referencing (tham chiếu): lưu ObjectId, dùng populate
+//   → Linh hoạt, phù hợp 1:many, many:many (user có orders)
+//
+// Quy tắc: Embed khi đọc cùng nhau, ít thay đổi, < 100 items
+//           Reference khi truy cập độc lập, thay đổi thường xuyên
+
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║              🏋️ BÀI TẬP THỰC HÀNH BÊN DƯỚI                ║
+// ╚══════════════════════════════════════════════════════════════╝
+
+
 // ************************************************************
 // PHẦN 1: KHÁI NIỆM CƠ BẢN
 // ************************************************************

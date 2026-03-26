@@ -11,6 +11,144 @@
 // ============================================================
 
 
+// ╔══════════════════════════════════════════════════════════════╗
+// ║              📖 LÝ THUYẾT NEXT.JS TỔNG QUAN                 ║
+// ╚══════════════════════════════════════════════════════════════╝
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 1. NEXT.JS LÀ GÌ?                                          │
+// └─────────────────────────────────────────────────────────────┘
+// Next.js là React framework cho production, phát triển bởi Vercel.
+// Thêm những gì React thiếu: routing, SSR, SSG, API routes, optimization.
+//
+// Đặc điểm:
+// - File-system based routing (folder = route)
+// - Server-Side Rendering (SSR) & Static Site Generation (SSG)
+// - API Routes (backend trong cùng project)
+// - Image/Font optimization tự động
+// - Code splitting tự động
+// - Middleware support
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 2. APP ROUTER vs PAGES ROUTER                               │
+// └─────────────────────────────────────────────────────────────┘
+// Pages Router (cũ): pages/ folder, getServerSideProps, getStaticProps
+// App Router (mới, Next.js 13+): app/ folder, React Server Components
+//
+// App Router ưu điểm:
+// - Server Components MẶC ĐỊNH (ít JS gửi về client)
+// - Nested layouts (layout.js persist qua navigation)
+// - loading.js / error.js (tự động Suspense & ErrorBoundary)
+// - Server Actions (form handling trên server)
+// - Streaming & Suspense
+//
+// File conventions trong mỗi folder:
+//   page.js     → UI cho route
+//   layout.js   → Layout bọc pages (persist state)
+//   loading.js  → Loading UI (auto Suspense)
+//   error.js    → Error UI (auto ErrorBoundary)
+//   not-found.js → 404 page
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 3. SERVER COMPONENTS vs CLIENT COMPONENTS                   │
+// └─────────────────────────────────────────────────────────────┘
+// Server Component (SC) - MẶC ĐỊNH:
+//   ✅ Fetch data trực tiếp (async function)
+//   ✅ Truy cập DB, file system
+//   ✅ Không gửi JS về client (nhẹ hơn)
+//   ❌ KHÔNG dùng: useState, useEffect, onClick, browser API
+//
+// Client Component (CC) - thêm "use client":
+//   ✅ Dùng hooks, event handlers, browser APIs
+//   ❌ JS được gửi về client (bundle tăng)
+//
+// Quy tắc:
+//   SC CÓ THỂ import CC → ✅
+//   CC KHÔNG THỂ import SC → ❌
+//   → Đẩy "use client" xuống THẤP nhất có thể (leaf components)
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 4. ROUTING                                                  │
+// └─────────────────────────────────────────────────────────────┘
+// Static:    app/about/page.js        → /about
+// Dynamic:   app/blog/[slug]/page.js  → /blog/:slug
+// Catch-all: app/docs/[...slug]/page.js → /docs/a/b/c
+// Group:     app/(marketing)/pricing/page.js → /pricing
+// Parallel:  app/@modal/page.js       → Render cùng lúc
+//
+// Navigation:
+//   <Link href="/about">About</Link>       // Declarative
+//   const router = useRouter();
+//   router.push("/contact");                // Programmatic
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 5. DATA FETCHING                                            │
+// └─────────────────────────────────────────────────────────────┘
+// Next.js mở rộng fetch() với caching:
+//
+// SSG (Static):
+//   fetch(url, { cache: "force-cache" })  // Mặc định, build time
+//
+// SSR (Dynamic):
+//   fetch(url, { cache: "no-store" })     // Fetch mỗi request
+//
+// ISR (Incremental Static Regeneration):
+//   fetch(url, { next: { revalidate: 60 } }) // Tái tạo mỗi 60s
+//
+// generateStaticParams() → Pre-render dynamic routes tại build time
+// Promise.all([fetch1(), fetch2()]) → Parallel fetching (nhanh hơn)
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 6. SERVER ACTIONS                                           │
+// └─────────────────────────────────────────────────────────────┘
+// Async functions chạy trên SERVER, dùng cho mutations (CRUD).
+// Khai báo: "use server" ở đầu function hoặc đầu file.
+//
+//   // actions.js
+//   "use server";
+//   export async function createPost(formData) {
+//     const title = formData.get("title");
+//     await db.post.create({ data: { title } });
+//     revalidatePath("/blog");
+//   }
+//
+//   // In form component:
+//   <form action={createPost}>
+//     <input name="title" />
+//     <button type="submit">Submit</button>
+//   </form>
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 7. MIDDLEWARE & METADATA                                    │
+// └─────────────────────────────────────────────────────────────┘
+// Middleware (middleware.js ở root):
+//   Chạy TRƯỚC mỗi request → auth, redirect, headers
+//   export function middleware(request) { ... }
+//   export const config = { matcher: ["/dashboard/:path*"] };
+//
+// Metadata (SEO):
+//   Static:  export const metadata = { title: "...", description: "..." }
+//   Dynamic: export async function generateMetadata({ params }) { ... }
+
+// ┌─────────────────────────────────────────────────────────────┐
+// │ 8. CACHING (4 TẦNG)                                         │
+// └─────────────────────────────────────────────────────────────┘
+// 1. Request Memoization → Dedupe cùng fetch trong 1 render
+// 2. Data Cache         → Cache fetch responses trên server
+// 3. Full Route Cache   → Cache HTML/RSC payload
+// 4. Router Cache       → Cache trên client khi navigate
+//
+// Control:
+//   export const dynamic = "force-dynamic";  // SSR
+//   export const dynamic = "force-static";   // SSG
+//   export const revalidate = 60;            // ISR: 60s
+
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║              🏋️ BÀI TẬP THỰC HÀNH BÊN DƯỚI                ║
+// ╚══════════════════════════════════════════════════════════════╝
+
+
 // ************************************************************
 // PHẦN 1: CẤU TRÚC THƯ MỤC APP ROUTER
 // ************************************************************
