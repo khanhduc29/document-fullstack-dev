@@ -1,0 +1,973 @@
+<!-- ============================================================ -->
+<!-- 🚀 HTML & CSS ÔN TẬP - TỪ CƠ BẢN ĐẾN NÂNG CAO            -->
+<!-- ============================================================ -->
+<!-- Mở file này trong trình duyệt để xem kết quả!              -->
+<!-- Bỏ comment từng phần, sửa ??? và thực hành                 -->
+<!-- ============================================================ -->
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Ôn tập HTML CSS từ cơ bản đến nâng cao">
+  <title>HTML & CSS Practice</title>
+
+  <!-- ************************************************************
+       PHẦN CSS: TỪ CƠ BẢN ĐẾN NÂNG CAO
+       ************************************************************ -->
+  <style>
+    /* ═══════════════════════════════════════════
+       CSS PHẦN 1: SELECTORS (Bộ chọn)
+       ═══════════════════════════════════════════
+
+       📌 Định nghĩa:
+       - Element selector: div, p, h1
+       - Class selector: .class-name
+       - ID selector: #id-name
+       - Universal: *
+       - Attribute: [attr], [attr="value"], [attr^="start"], [attr$="end"], [attr*="contain"]
+       - Pseudo-class: :hover, :focus, :first-child, :nth-child(), :not()
+       - Pseudo-element: ::before, ::after, ::first-line, ::placeholder
+       - Combinators:
+         → Descendant: div p (p bên trong div)
+         → Child: div > p (p là con trực tiếp div)
+         → Adjacent sibling: h1 + p (p ngay sau h1)
+         → General sibling: h1 ~ p (tất cả p sau h1)
+
+       📌 Specificity (Độ ưu tiên): inline > #id > .class > element
+       Tính điểm:  inline=1000, id=100, class/attr/pseudo-class=10, element=1
+    */
+
+    /* 🏋️ BÀI TẬP: Selector nâng cao */
+    /* Bỏ comment để xem hiệu ứng */
+
+    /* Chọn li chẵn trong danh sách */
+    /* .selector-demo li:nth-child(even) { background: #f0f0f0; } */
+
+    /* Chọn li đầu tiên */
+    /* .selector-demo li:first-child { font-weight: bold; color: #e74c3c; } */
+
+    /* Chọn li cuối cùng */
+    /* .selector-demo li:last-child { border-bottom: none; } */
+
+    /* Chọn input có type="text" */
+    /* input[type="text"] { border: 2px solid #3498db; } */
+
+    /* Chọn link bắt đầu bằng https */
+    /* a[href^="https"] { color: green; } */
+
+    /* Pseudo-element ::before */
+    /* .selector-demo li::before { content: "→ "; color: #3498db; } */
+
+    /* :not() - Chọn tất cả trừ... */
+    /* .selector-demo li:not(:first-child) { opacity: 0.8; } */
+
+
+    /* ═══════════════════════════════════════════
+       CSS PHẦN 2: BOX MODEL
+       ═══════════════════════════════════════════
+
+       📌 Định nghĩa:
+       Mỗi element = Content + Padding + Border + Margin
+       ┌─────────────── Margin ───────────────┐
+       │ ┌─────────── Border ──────────────┐  │
+       │ │ ┌──────── Padding ───────────┐   │  │
+       │ │ │ ┌────── Content ────────┐  │   │  │
+       │ │ │ │                       │  │   │  │
+       │ │ │ └───────────────────────┘  │   │  │
+       │ │ └────────────────────────────┘   │  │
+       │ └──────────────────────────────────┘  │
+       └───────────────────────────────────────┘
+
+       📌 box-sizing:
+       - content-box (mặc định): width = chỉ content
+       - border-box: width = content + padding + border (KHUYÊN DÙNG!)
+    */
+
+    *, *::before, *::after {
+      box-sizing: border-box; /* ✅ Best practice */
+      margin: 0;
+      padding: 0;
+    }
+
+    .box-model-demo {
+      width: 300px;
+      padding: 20px;
+      border: 3px solid #3498db;
+      margin: 15px;
+      background: #ecf0f1;
+      /* box-sizing: border-box → tổng width = 300px */
+      /* box-sizing: content-box → tổng width = 300 + 40 + 6 = 346px */
+    }
+
+
+    /* ═══════════════════════════════════════════
+       CSS PHẦN 3: DISPLAY & POSITIONING
+       ═══════════════════════════════════════════
+
+       📌 Display:
+       - block: chiếm toàn bộ width (div, p, h1)
+       - inline: chỉ chiếm content width, KHÔNG set width/height (span, a)
+       - inline-block: inline nhưng CÓ THỂ set width/height
+       - none: ẩn hoàn toàn (không chiếm không gian)
+       - flex: flexbox container
+       - grid: grid container
+
+       📌 Position:
+       - static: mặc định, theo document flow
+       - relative: dịch chuyển SO VỚI vị trí gốc (vẫn chiếm chỗ)
+       - absolute: dịch chuyển SO VỚI parent có position != static
+       - fixed: dịch chuyển SO VỚI viewport (luôn cố định)
+       - sticky: kết hợp relative + fixed (dính khi scroll)
+
+       📌 z-index: thứ tự chồng lên nhau (chỉ hoạt động với position != static)
+    */
+
+    .position-demo {
+      position: relative;
+      height: 200px;
+      background: #ecf0f1;
+      border: 1px solid #bdc3c7;
+    }
+
+    .pos-absolute {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #e74c3c;
+      color: white;
+      padding: 5px 10px;
+    }
+
+    /* 🏋️ BÀI TẬP: Tạo sticky header */
+    /* .sticky-header { position: sticky; top: 0; background: white; z-index: 100; } */
+
+
+    /* ═══════════════════════════════════════════
+       CSS PHẦN 4: FLEXBOX
+       ═══════════════════════════════════════════
+
+       📌 Định nghĩa:
+       Flexbox = layout 1 chiều (hàng HOẶC cột)
+       Container properties:
+       - display: flex
+       - flex-direction: row | row-reverse | column | column-reverse
+       - justify-content: flex-start | center | flex-end | space-between | space-around | space-evenly
+       - align-items: stretch | flex-start | center | flex-end | baseline
+       - flex-wrap: nowrap | wrap | wrap-reverse
+       - gap: khoảng cách giữa items
+       - align-content: (nhiều dòng) giống justify-content nhưng trục phụ
+
+       Item properties:
+       - flex: grow shrink basis (shorthand)
+       - flex-grow: tỉ lệ chiếm không gian thừa
+       - flex-shrink: tỉ lệ co lại
+       - flex-basis: kích thước ban đầu
+       - align-self: override align-items cho item cụ thể
+       - order: thứ tự hiển thị
+    */
+
+    .flex-container {
+      display: flex;
+      gap: 10px;
+      padding: 10px;
+      background: #2c3e50;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+
+    .flex-container > div {
+      padding: 15px 25px;
+      background: #3498db;
+      color: white;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+    /* 🏋️ BÀI TẬP 4.1: Căn giữa hoàn hảo */
+    .flex-center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 150px;
+      background: #ecf0f1;
+      border-radius: 8px;
+    }
+
+    /* 🏋️ BÀI TẬP 4.2: Space between */
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* 🏋️ BÀI TẬP 4.3: Flex grow */
+    /* .flex-grow-demo > .grow { flex-grow: 1; } */
+    /* .flex-grow-demo > .fixed { width: 100px; flex-shrink: 0; } */
+
+
+    /* ═══════════════════════════════════════════
+       CSS PHẦN 5: GRID
+       ═══════════════════════════════════════════
+
+       📌 Định nghĩa:
+       Grid = layout 2 chiều (hàng VÀ cột cùng lúc)
+       Container:
+       - display: grid
+       - grid-template-columns: 1fr 2fr 1fr | repeat(3, 1fr)
+       - grid-template-rows: 100px auto 100px
+       - gap / row-gap / column-gap
+       - grid-template-areas: đặt tên vùng
+       - justify-items / align-items: căn items trong ô
+       - justify-content / align-content: căn grid trong container
+
+       Item:
+       - grid-column: start / end (hoặc span N)
+       - grid-row: start / end
+       - grid-area: tên vùng
+       - place-self: align-self justify-self
+    */
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 10px;
+      background: #2c3e50;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+
+    .grid-container > div {
+      padding: 20px;
+      background: #27ae60;
+      color: white;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+    /* 🏋️ BÀI TẬP 5.1: Grid Template Areas (Layout kinh điển) */
+    .grid-layout {
+      display: grid;
+      grid-template-areas:
+        "header header header"
+        "sidebar main main"
+        "footer footer footer";
+      grid-template-columns: 200px 1fr 1fr;
+      grid-template-rows: 60px 1fr 40px;
+      gap: 5px;
+      min-height: 300px;
+      background: #34495e;
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+
+    .grid-layout > * {
+      padding: 10px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .g-header { grid-area: header; background: #e74c3c; }
+    .g-sidebar { grid-area: sidebar; background: #8e44ad; }
+    .g-main { grid-area: main; background: #2980b9; }
+    .g-footer { grid-area: footer; background: #27ae60; }
+
+    /* 🏋️ BÀI TẬP 5.2: Auto-fill responsive grid */
+    .grid-auto {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 10px;
+      margin: 10px 0;
+    }
+
+
+    /* ═══════════════════════════════════════════
+       CSS PHẦN 6: RESPONSIVE DESIGN
+       ═══════════════════════════════════════════
+
+       📌 Định nghĩa:
+       - Media Queries: áp dụng CSS theo điều kiện (width, height, orientation)
+       - Mobile First: viết CSS cho mobile trước, dùng min-width để mở rộng
+       - Đơn vị responsive: %, vw, vh, rem, em, vmin, vmax
+       - clamp(): clamp(min, preferred, max) → responsive value
+
+       📌 Breakpoints phổ biến:
+       Mobile: < 768px
+       Tablet: 768px - 1024px
+       Desktop: > 1024px
+       Large: > 1440px
+    */
+
+    /* 🏋️ BÀI TẬP 6.1: Media Queries */
+    .responsive-demo {
+      padding: 20px;
+      background: #3498db;
+      color: white;
+      text-align: center;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+
+    @media (max-width: 768px) {
+      .responsive-demo {
+        background: #e74c3c;
+        /* font-size: 14px; */
+      }
+      .responsive-demo::after {
+        content: " (Mobile)";
+      }
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .responsive-demo::after {
+        content: " (Tablet)";
+      }
+    }
+
+    @media (min-width: 1025px) {
+      .responsive-demo::after {
+        content: " (Desktop)";
+      }
+    }
+
+    /* 🏋️ BÀI TẬP 6.2: clamp() cho responsive text */
+    .clamp-text {
+      font-size: clamp(16px, 2.5vw, 32px);  /* Min 16px, Max 32px */
+      margin: 10px 0;
+    }
+
+    /* 🏋️ BÀI TẬP 6.3: Container Queries (CSS mới!) */
+    /* .card-container { container-type: inline-size; } */
+    /* @container (min-width: 400px) { .card { flex-direction: row; } } */
+
+
+    /* ═══════════════════════════════════════════
+       CSS PHẦN 7: TRANSITIONS & ANIMATIONS
+       ═══════════════════════════════════════════
+
+       📌 Transition:
+       - transition: property duration timing-function delay
+       - timing: ease, linear, ease-in, ease-out, ease-in-out, cubic-bezier()
+
+       📌 Animation:
+       - @keyframes name { from {} to {} }  hoặc  { 0% {} 50% {} 100% {} }
+       - animation: name duration timing iteration direction fill-mode
+       - animation-play-state: running | paused
+    */
+
+    .transition-demo {
+      width: 100px;
+      height: 100px;
+      background: #3498db;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      margin: 10px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      cursor: pointer;
+    }
+
+    .transition-demo:hover {
+      width: 200px;
+      background: #e74c3c;
+      border-radius: 50px;
+      transform: scale(1.1);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(-100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .animate-slide { animation: slideIn 0.5s ease-out; }
+    .animate-pulse { animation: pulse 2s ease-in-out infinite; }
+
+    /* 🏋️ BÀI TẬP 7.1: Loading spinner */
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #ecf0f1;
+      border-top-color: #3498db;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 10px 0;
+    }
+
+
+    /* ═══════════════════════════════════════════
+       CSS PHẦN 8: TRANSFORM
+       ═══════════════════════════════════════════
+
+       📌 Định nghĩa:
+       - translate(x, y): di chuyển
+       - rotate(deg): xoay
+       - scale(x, y): phóng to/thu nhỏ
+       - skew(x, y): nghiêng
+       - transform-origin: điểm gốc biến đổi
+       - perspective: hiệu ứng 3D
+    */
+
+    /* 🏋️ BÀI TẬP 8.1: Card flip 3D */
+    .flip-card {
+      width: 200px;
+      height: 120px;
+      perspective: 1000px;
+      margin: 10px 0;
+    }
+
+    .flip-card-inner {
+      width: 100%;
+      height: 100%;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+      position: relative;
+    }
+
+    .flip-card:hover .flip-card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .flip-card-front, .flip-card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+
+    .flip-card-front { background: #3498db; }
+    .flip-card-back { background: #e74c3c; transform: rotateY(180deg); }
+
+
+    /* ═══════════════════════════════════════════
+       CSS PHẦN 9: CSS VARIABLES (Custom Properties)
+       ═══════════════════════════════════════════
+
+       📌 Định nghĩa:
+       - Khai báo: --tên-biến: giá trị
+       - Sử dụng: var(--tên-biến, fallback)
+       - Scope: :root (global) hoặc selector cụ thể
+       - Có thể thay đổi bằng JS: element.style.setProperty("--color", "red")
+    */
+
+    :root {
+      --primary: #3498db;
+      --secondary: #2ecc71;
+      --danger: #e74c3c;
+      --text: #2c3e50;
+      --bg: #ecf0f1;
+      --radius: 8px;
+      --shadow: 0 4px 15px rgba(0,0,0,0.1);
+      --transition: all 0.3s ease;
+      --font-size-sm: 14px;
+      --font-size-md: 16px;
+      --font-size-lg: 20px;
+      --spacing: 16px;
+    }
+
+    /* 🏋️ BÀI TẬP 9.1: Dùng CSS Variables */
+    .var-demo {
+      background: var(--primary);
+      color: white;
+      padding: var(--spacing);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      margin: 10px 0;
+    }
+
+    /* 🏋️ BÀI TẬP 9.2: Dark Theme bằng CSS Variables */
+    /* [data-theme="dark"] {
+      --primary: #2980b9;
+      --text: #ecf0f1;
+      --bg: #1a1a2e;
+    } */
+
+
+    /* ═══════════════════════════════════════════
+       CSS PHẦN 10: ADVANCED CSS
+       ═══════════════════════════════════════════ */
+
+    /* 📌 10.1: Gradients */
+    .gradient-demo {
+      height: 60px;
+      border-radius: 8px;
+      margin: 5px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+
+    .gradient-linear { background: linear-gradient(135deg, #667eea, #764ba2); }
+    .gradient-radial { background: radial-gradient(circle, #f093fb, #f5576c); }
+    .gradient-conic  { background: conic-gradient(from 0deg, #ff6b6b, #feca57, #48dbfb, #ff6b6b); }
+
+    /* 📌 10.2: Filters & Backdrop */
+    .blur-demo {
+      filter: blur(0px);
+      transition: filter 0.3s;
+    }
+    .blur-demo:hover {
+      filter: blur(2px);
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 12px;
+      padding: 20px;
+      color: white;
+    }
+
+    /* 📌 10.3: clip-path */
+    .clip-demo {
+      width: 100px;
+      height: 100px;
+      background: var(--primary);
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); /* Hình thoi */
+      margin: 10px auto;
+    }
+
+    /* 📌 10.4: Scroll Snap */
+    .scroll-snap-container {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      gap: 10px;
+      padding: 10px;
+    }
+    .scroll-snap-container > div {
+      scroll-snap-align: start;
+      min-width: 200px;
+      height: 100px;
+      background: var(--primary);
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+
+    /* 📌 10.5: aspect-ratio */
+    /* .video-wrapper { aspect-ratio: 16/9; width: 100%; background: black; } */
+
+    /* 📌 10.6: Logical Properties */
+    /* padding-inline: 20px;   → padding-left + padding-right */
+    /* margin-block: 10px;     → margin-top + margin-bottom */
+    /* border-inline-start: 3px solid red; → border-left (LTR) */
+
+    /* 📌 10.7: :has() selector (CSS mới nhất!) */
+    /* .card:has(img) { padding: 0; }         → Card CÓ img */
+    /* form:has(:invalid) button { opacity: 0.5; } → Form CÓ input invalid */
+
+    /* 📌 10.8: Subgrid */
+    /* .parent { display: grid; grid-template-columns: 1fr 1fr; } */
+    /* .child { display: grid; grid-template-columns: subgrid; grid-column: span 2; } */
+
+
+    /* ═══════════════════════════════════════════
+       GENERAL STYLES cho Demo
+       ═══════════════════════════════════════════ */
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--bg);
+      padding: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    h1 { color: var(--primary); border-bottom: 3px solid var(--primary); padding-bottom: 10px; margin: 30px 0 15px; }
+    h2 { color: var(--secondary); margin: 20px 0 10px; }
+    h3 { margin: 15px 0 8px; }
+    section { margin: 20px 0; padding: 20px; background: white; border-radius: var(--radius); box-shadow: var(--shadow); }
+    code { background: #f1f2f6; padding: 2px 6px; border-radius: 3px; font-size: 14px; }
+    pre { background: #2c3e50; color: #ecf0f1; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 10px 0; }
+  </style>
+</head>
+
+<body>
+
+  <!-- ************************************************************
+       HTML PHẦN 1: SEMANTIC HTML
+       ************************************************************
+
+       📌 Định nghĩa: Semantic = thẻ có ý nghĩa, mô tả nội dung
+       Tại sao quan trọng?
+       - SEO: Search engine hiểu cấu trúc trang
+       - Accessibility: Screen readers đọc được cấu trúc
+       - Code sạch, dễ bảo trì
+
+       📌 Structural: <header> <nav> <main> <section> <article> <aside> <footer>
+       📌 Text: <h1>-<h6> <p> <blockquote> <pre> <code> <em> <strong> <mark>
+       📌 List: <ul> <ol> <li> <dl> <dt> <dd>
+       📌 Table: <table> <thead> <tbody> <tfoot> <tr> <th> <td> <caption>
+       📌 Form: <form> <input> <textarea> <select> <button> <label> <fieldset> <legend>
+       📌 Media: <img> <video> <audio> <picture> <source> <figure> <figcaption>
+       📌 Interactive: <details> <summary> <dialog>
+  -->
+
+  <header>
+    <h1>🚀 HTML & CSS Practice</h1>
+    <p>Ôn tập từ cơ bản đến nâng cao</p>
+  </header>
+
+  <nav>
+    <!-- 🏋️ BÀI TẬP: Tạo navigation bar với Flexbox -->
+    <!-- <ul style="display:flex; list-style:none; gap:20px;">
+      <li><a href="#selectors">Selectors</a></li>
+      <li><a href="#flexbox">Flexbox</a></li>
+      <li><a href="#grid">Grid</a></li>
+      <li><a href="#animations">Animations</a></li>
+    </ul> -->
+  </nav>
+
+  <main>
+
+    <!-- ============================================ -->
+    <!-- HTML PHẦN 2: TEXT & SEMANTICS -->
+    <!-- ============================================ -->
+    <section>
+      <h2>📌 Phần 1: Semantic HTML</h2>
+
+      <!-- Heading hierarchy: chỉ 1 h1 per page, h2 > h3 > h4 -->
+      <h3>Headings & Text</h3>
+      <p>Đây là <strong>chữ đậm (quan trọng)</strong> và <em>chữ nghiêng (nhấn mạnh)</em>.</p>
+      <p>Đây là <mark>highlight</mark> và <code>inline code</code>.</p>
+      <p>Đây là <abbr title="HyperText Markup Language">HTML</abbr>.</p>
+
+      <blockquote cite="https://example.com">
+        <p>"Code is like humor. When you have to explain it, it's bad."</p>
+        <footer>— Cory House</footer>
+      </blockquote>
+
+      <!-- 🏋️ BÀI TẬP: Thêm danh sách mô tả (definition list) -->
+      <!-- <dl>
+        <dt>HTML</dt>
+        <dd>HyperText Markup Language - cấu trúc trang web</dd>
+        <dt>CSS</dt>
+        <dd>Cascading Style Sheets - trang trí trang web</dd>
+      </dl> -->
+
+      <!-- Interactive elements -->
+      <details>
+        <summary>Click để xem thêm (details/summary)</summary>
+        <p>Đây là nội dung ẩn, không cần JavaScript!</p>
+      </details>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- HTML PHẦN 3: FORMS -->
+    <!-- ============================================ -->
+    <section>
+      <h2>📌 Phần 2: Forms & Inputs</h2>
+
+      <!--
+        📌 Các thuộc tính input quan trọng:
+        type: text, email, password, number, tel, url, date, time, color, range, file, checkbox, radio, hidden
+        required, placeholder, minlength, maxlength, min, max, step, pattern, disabled, readonly
+        autocomplete, autofocus, multiple (file/email), accept (file)
+      -->
+
+      <form id="demo-form" onsubmit="event.preventDefault(); alert('Form submitted!');">
+        <fieldset>
+          <legend>Thông tin cá nhân</legend>
+
+          <div style="margin: 10px 0;">
+            <label for="fullname">Họ tên: *</label><br>
+            <input type="text" id="fullname" name="fullname" required minlength="2" placeholder="Nhập họ tên" autofocus>
+          </div>
+
+          <div style="margin: 10px 0;">
+            <label for="email">Email: *</label><br>
+            <input type="email" id="email" name="email" required placeholder="email@example.com">
+          </div>
+
+          <div style="margin: 10px 0;">
+            <label for="phone">Số điện thoại:</label><br>
+            <input type="tel" id="phone" name="phone" pattern="[0-9]{10}" placeholder="0901234567">
+          </div>
+
+          <div style="margin: 10px 0;">
+            <label for="birthday">Ngày sinh:</label><br>
+            <input type="date" id="birthday" name="birthday">
+          </div>
+
+          <div style="margin: 10px 0;">
+            <label for="salary">Mức lương mong muốn:</label><br>
+            <input type="range" id="salary" name="salary" min="5000000" max="50000000" step="1000000" value="15000000">
+            <output id="salary-output">15,000,000đ</output>
+          </div>
+
+          <!-- 🏋️ BÀI TẬP: Thêm select, radio, checkbox -->
+          <!-- <div>
+            <label>Giới tính:</label>
+            <input type="radio" name="gender" value="male" id="male"> <label for="male">Nam</label>
+            <input type="radio" name="gender" value="female" id="female"> <label for="female">Nữ</label>
+          </div> -->
+
+          <!-- <div>
+            <label for="department">Phòng ban:</label>
+            <select id="department" name="department">
+              <option value="">-- Chọn --</option>
+              <option value="engineering">Engineering</option>
+              <option value="marketing">Marketing</option>
+            </select>
+          </div> -->
+
+          <!-- <div>
+            <label>
+              <input type="checkbox" name="agree" required> Đồng ý điều khoản *
+            </label>
+          </div> -->
+        </fieldset>
+
+        <button type="submit" style="margin-top: 10px; padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: var(--radius); cursor: pointer;">
+          Gửi
+        </button>
+      </form>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- HTML PHẦN 4: TABLE -->
+    <!-- ============================================ -->
+    <section>
+      <h2>📌 Phần 3: Table</h2>
+
+      <table style="width: 100%; border-collapse: collapse;">
+        <caption>Bảng nhân viên</caption>
+        <thead>
+          <tr style="background: var(--primary); color: white;">
+            <th style="padding: 10px; text-align: left;">Tên</th>
+            <th>Phòng ban</th>
+            <th>Lương</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #eee;">Nguyễn Văn An</td>
+            <td style="text-align:center;">Engineering</td>
+            <td style="text-align:right;">25,000,000đ</td>
+          </tr>
+          <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border-bottom: 1px solid #eee;">Trần Thị Bình</td>
+            <td style="text-align:center;">Marketing</td>
+            <td style="text-align:right;">18,000,000đ</td>
+          </tr>
+          <!-- 🏋️ BÀI TẬP: Thêm rows và tfoot tính tổng lương -->
+        </tbody>
+        <!-- <tfoot>
+          <tr style="font-weight: bold; background: #ecf0f1;">
+            <td colspan="2">Tổng</td>
+            <td style="text-align:right;">43,000,000đ</td>
+          </tr>
+        </tfoot> -->
+      </table>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- CSS DEMOS -->
+    <!-- ============================================ -->
+
+    <section id="flexbox">
+      <h2>📌 Phần 4: Flexbox Demo</h2>
+
+      <h3>Flex Container cơ bản</h3>
+      <div class="flex-container">
+        <div>Item 1</div>
+        <div>Item 2</div>
+        <div>Item 3</div>
+      </div>
+
+      <h3>Căn giữa hoàn hảo</h3>
+      <div class="flex-center">
+        <p>🎯 Căn giữa bằng Flexbox</p>
+      </div>
+
+      <!-- 🏋️ BÀI TẬP: Thêm flex-wrap, flex-direction: column -->
+    </section>
+
+
+    <section id="grid">
+      <h2>📌 Phần 5: Grid Demo</h2>
+
+      <h3>Grid 3 cột</h3>
+      <div class="grid-container">
+        <div>1</div> <div>2</div> <div>3</div>
+        <div>4</div> <div>5</div> <div>6</div>
+      </div>
+
+      <h3>Grid Template Areas (Classic Layout)</h3>
+      <div class="grid-layout">
+        <div class="g-header">Header</div>
+        <div class="g-sidebar">Sidebar</div>
+        <div class="g-main">Main Content</div>
+        <div class="g-footer">Footer</div>
+      </div>
+
+      <!-- 🏋️ BÀI TẬP: Tạo responsive grid dùng auto-fill -->
+    </section>
+
+
+    <section id="animations">
+      <h2>📌 Phần 6: Transitions & Animations Demo</h2>
+
+      <h3>Hover transition</h3>
+      <div class="transition-demo">Hover me</div>
+
+      <h3>Loading Spinner</h3>
+      <div class="spinner"></div>
+
+      <h3>Pulse Animation</h3>
+      <div class="var-demo animate-pulse">Pulse Effect</div>
+
+      <h3>Card Flip 3D (hover)</h3>
+      <div class="flip-card">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">Mặt trước</div>
+          <div class="flip-card-back">Mặt sau</div>
+        </div>
+      </div>
+    </section>
+
+
+    <section>
+      <h2>📌 Phần 7: Gradients & Effects</h2>
+
+      <div class="gradient-demo gradient-linear">Linear Gradient</div>
+      <div class="gradient-demo gradient-radial">Radial Gradient</div>
+      <div class="gradient-demo gradient-conic">Conic Gradient</div>
+
+      <h3>clip-path (hình thoi)</h3>
+      <div class="clip-demo"></div>
+    </section>
+
+
+    <section>
+      <h2>📌 Phần 8: Responsive Demo</h2>
+      <div class="responsive-demo">Resize trình duyệt để thấy thay đổi</div>
+      <p class="clamp-text">Text responsive bằng clamp()</p>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- HTML PHẦN 5: MEDIA & ACCESSIBILITY -->
+    <!-- ============================================ -->
+    <section>
+      <h2>📌 Phần 9: Media & Accessibility</h2>
+
+      <!--
+        📌 Accessibility (a11y) quan trọng:
+        - alt cho img (mô tả ảnh)
+        - label cho input
+        - ARIA: aria-label, aria-hidden, aria-describedby, role
+        - Semantic HTML → screen reader hiểu
+        - Tab navigation: tabindex
+        - Color contrast ratio: ≥ 4.5:1 (WCAG AA)
+      -->
+
+      <!-- Picture element: responsive images -->
+      <!-- <picture>
+        <source media="(min-width: 1024px)" srcset="large.jpg">
+        <source media="(min-width: 768px)" srcset="medium.jpg">
+        <img src="small.jpg" alt="Mô tả ảnh" loading="lazy">
+      </picture> -->
+
+      <!-- Figure + Figcaption -->
+      <figure>
+        <div style="width:100%;height:100px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:8px;"></div>
+        <figcaption>Hình 1: Demo gradient figure caption</figcaption>
+      </figure>
+
+      <!-- Video (nếu có file) -->
+      <!-- <video controls width="100%" poster="poster.jpg" preload="metadata">
+        <source src="video.mp4" type="video/mp4">
+        <track src="captions.vtt" kind="subtitles" srclang="vi" label="Tiếng Việt">
+        Trình duyệt không hỗ trợ video.
+      </video> -->
+
+      <!-- ARIA example -->
+      <button aria-label="Đóng dialog" title="Đóng">✕</button>
+      <div role="alert" aria-live="polite" style="display:none;">Thao tác thành công!</div>
+    </section>
+
+  </main>
+
+  <footer style="text-align: center; margin-top: 40px; padding: 20px; color: #7f8c8d;">
+    <p>🎯 HTML & CSS Practice - Ôn tập từ cơ bản đến nâng cao</p>
+  </footer>
+
+
+  <!-- JavaScript nhỏ cho range input demo -->
+  <script>
+    const salary = document.getElementById('salary');
+    const output = document.getElementById('salary-output');
+    if (salary && output) {
+      salary.addEventListener('input', () => {
+        output.textContent = Number(salary.value).toLocaleString('vi-VN') + 'đ';
+      });
+    }
+  </script>
+
+</body>
+</html>
+
+<!--
+  ============================================================
+  🎯 TỔNG KẾT HTML & CSS
+  ============================================================
+  HTML:
+  1. Semantic HTML: header, nav, main, section, article, aside, footer
+  2. Text: headings, p, strong, em, mark, blockquote, details/summary
+  3. Forms: input types, validation, fieldset, label, select, radio, checkbox
+  4. Tables: thead, tbody, tfoot, colspan, caption
+  5. Media: img, video, audio, picture, figure, loading="lazy"
+  6. Accessibility: alt, label, ARIA, tabindex, semantic elements
+
+  CSS:
+  1. Selectors: element, class, id, attribute, pseudo-class, pseudo-element
+  2. Box Model: content, padding, border, margin, box-sizing
+  3. Display & Position: block, inline, flex, grid, relative, absolute, fixed, sticky
+  4. Flexbox: justify-content, align-items, flex-grow, gap
+  5. Grid: template-columns/rows, template-areas, auto-fill, minmax
+  6. Responsive: media queries, clamp(), container queries, breakpoints
+  7. Transitions & Animations: @keyframes, transition, transform, animation
+  8. CSS Variables: --custom-property, var(), theming
+  9. Advanced: gradients, filters, backdrop, clip-path, scroll-snap
+  10. Modern: :has(), subgrid, logical properties, aspect-ratio, container queries
+
+  📚 Tài liệu:
+  - MDN HTML: https://developer.mozilla.org/en-US/docs/Web/HTML
+  - MDN CSS: https://developer.mozilla.org/en-US/docs/Web/CSS
+  - CSS Tricks: https://css-tricks.com/
+  - Flexbox Froggy: https://flexboxfroggy.com/
+  - Grid Garden: https://cssgridgarden.com/
+  ============================================================
+-->
